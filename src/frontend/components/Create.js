@@ -16,7 +16,18 @@ const Create = ({ marketplace, nft }) => {
       try {
         const result = await client.add(file)
         console.log(result)
-        setImage(`https://ipfs.infura.io/ipfs/${result.path}`)
+
+        //Add watermark
+        const Jimp = require("jimp");
+        const size = 500;
+
+        const watermark = await Jimp.read("./watermark.png");
+        watermark.opacity = 0.5;
+        const image = await Jimp.read(`./images/non_watermarked/${result.path}`);
+        image.resize(size, size);
+        image.composite(watermark, size / 2 + 100, size / 2 + 100);
+
+        setImage(`https://ipfs.infura.io/ipfs/${image}`)
       } catch (error){
         console.log("ipfs image upload error: ", error)
       }
